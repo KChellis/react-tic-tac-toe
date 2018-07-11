@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 function Square(props) {
   return (
-    <div>
+    <div className="col-sm-1 square" onClick={props.onClick}>
       <style jsx>{`
         .square {
           background: #fff;
@@ -28,9 +28,7 @@ function Square(props) {
           background: #ddd;
         }
       `}</style>
-      <button className="square" onClick={props.onClick}>
-        {props.value}
-      </button>
+      {props.value}
     </div>
   );
 }
@@ -38,6 +36,6 @@ function Square(props) {
 Square.propTypes = {
   onClick: PropTypes.func,
 
-}
+};
 
 export default Square;

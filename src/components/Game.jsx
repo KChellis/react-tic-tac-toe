@@ -8,47 +8,53 @@ import Square from './Square';
 
 class Game extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      history: [{
-        squares: Array(9).fill(null),
-      }],
-      stepNumber: 0,
-      xIsNext: true,
-    };
-  }
 
   handleClick(i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const squares = current.squares.slice();
-    if(CalculateWinner(squares) || squares[i]){
+    const current = this.props.history[this.props.stepNumber];
+    const squares = current.squares;
+    const winner = CalculateWinner(squares);
+    const { dispatch } = this.props;
+    if(winner || squares[i]){
       return;
     }
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
-    this.setState({
-      history: history.concat([{
-        squares: squares,
-      }]),
-      stepNumber: history.length,
-      xIsNext: !this.state.xIsNext
-    });
+    let player = 'X';
+    if(!this.props.xIsNext){
+      player = 'O';
+    }
+    let action1 = {
+      type: 'MARK_TURN',
+      player: player,
+      index: i,
+      turn: this.props.stepNumber + 1
+    }
+    dispatch(action1);
+    let action2 = {
+      type: 'RECORD_TURN',
+      turn: this.props.stepNumber + 1
+    }
+    dispatch(action2);
+    let action3 = {
+      type: 'SWITCH_PLAYER',
+      xIsNext: !this.props.xIsNext
+    }
+    dispatch(action3);
   }
 
   jumpTo(step) {
-    this.setState({
-      stepNumber: step,
-      xIsNext: (step % 2) === 0,
-    });
+    const { dispatch } = this.props;
+    let action = {
+      type: 'RECORD_TURN',
+      turn: parseInt(step)
+    }
+    dispatch(action);
   }
 
   render() {
-    const history = this.state.history;
-    const current = history[this.state.stepNumber];
-    const winner = CalculateWinner(current.squares);
+    const current = this.props.history[this.props.stepNumber];
+    const squares = current.squares;
+    const winner = CalculateWinner(squares);
 
-    const moves = history.map((step, move) => {
+    const moves = Object.keys(this.props.history).map(move =>  {
       const desc = move ?
         'Go to move #' + move :
         'Go to game start';
@@ -63,11 +69,11 @@ class Game extends React.Component {
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+      status = 'Next player: ' + (this.props.xIsNext ? 'X' : 'O');
     }
 
     return (
-      <div className="game">
+      <div className="game container">
         <style jsx>{`
           .game {
             display: flex;
@@ -87,7 +93,7 @@ class Game extends React.Component {
         `}</style>
         <div className="game-board">
           <Board
-            squares={this.squares}
+            squares={squares}
             onClick={(i) => this.handleClick(i)}
           />
         </div>

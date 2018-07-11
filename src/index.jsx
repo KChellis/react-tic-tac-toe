@@ -1,22 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Game from './components/Game';
-import { AppContainer } from 'react-hot-loader';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { HashRouter } from 'react-router-dom';
+import rootReducer from './reducers/index';
 
-const store = createStore();
+const store = createStore(rootReducer);
 
 const render = (Component) => {
   ReactDOM.render(
-    <AppContainer>
-      <HashRouter>
-        <Provider store={store}>
-          <Component/>
-        </Provider>
-      </HashRouter>
-    </AppContainer>,
+    <HashRouter>
+      <Provider store={store}>
+        <Component/>
+      </Provider>
+    </HashRouter>,
     document.getElementById('react-app-root')
   );
 };
